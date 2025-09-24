@@ -47,7 +47,11 @@ public struct SecurityInfo {
     /// Indicates whether **Find My Mac** is enabled.
     ///
     /// When enabled, this feature helps locate and protect your Mac if it’s lost or stolen.
-    public var isFindMyMacEnabled: Bool { isFindMeEnabled() }
+    public var findMeEnabled: Bool { isFindMeEnabled() }
+    
+    
+    /// Indicates whether the macOS Firewall is enabled.
+    public var firewallEnabled: Bool { isFirewallEnabled() }
     
     
     /// Opens the **Security & Privacy** section of System Settings.
@@ -144,6 +148,29 @@ private extension SecurityInfo {
         let isEnabled = plist["FMMEnabled"] as! Int
         
         return isEnabled == 1
+    }
+    
+    private func isFirewallEnabled() -> Bool {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/libexec/ApplicationFirewall/socketfilterfw")
+        process.arguments = ["--getglobalstate"]
+
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = pipe
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+        } catch {
+            return false
+        }
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        guard let output = String(data: data, encoding: .utf8) else { return false }
+
+        // Example output: "Firewall is enabled. (State = 1)"
+        return output.contains("enabled") || output.contains("State = 1")
     }
 }
 

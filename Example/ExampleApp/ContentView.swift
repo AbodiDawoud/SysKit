@@ -6,10 +6,9 @@
 import SwiftUI
 import SysKit
 
+
 struct ContentView: View {
     @State private var showUsersSheet: Bool = false
-    private let sys = SystemSnapshot()
-    
     
     var body: some View {
         Form {
@@ -40,73 +39,82 @@ struct ContentView: View {
             
             
             Section("MacOS Metadata") {
-                LabeledContent("Mac Model", value: sys.macos.macModelName)
-                LabeledContent("Identifier", value: sys.macos.modelIdentifier)
-                LabeledContent("Details", value: sys.macos.macModelDetails)
-                LabeledContent("Chip", value: sys.macos.chip)
-                LabeledContent("Memory", value: sys.macos.memory)
+                LabeledContent("Mac Model", value: SystemSnapshot.macos.macModelName)
+                LabeledContent("Identifier", value: SystemSnapshot.macos.modelIdentifier)
+                LabeledContent("Details", value: SystemSnapshot.macos.macModelDetails)
+                LabeledContent("Chip", value: SystemSnapshot.macos.chip)
+                LabeledContent("Memory", value: SystemSnapshot.macos.memory)
                 
-                LabeledContent("Serial Number", value: sys.macos.serialString)
-                LabeledContent("Board ID", value: sys.macos.boardID)
-                LabeledContent("Regulatory ID", value: sys.macos.regulatoryID)
-                LabeledContent("Kernel Version", value: sys.macos.kernelVersion)
-                LabeledContent("Uptime", value: sys.macos.formattedSystemUptime)
+                LabeledContent("Serial Number", value: SystemSnapshot.macos.serialString)
+                LabeledContent("Board ID", value: SystemSnapshot.macos.boardID)
+                LabeledContent("Regulatory ID", value: SystemSnapshot.macos.regulatoryID)
+                LabeledContent("Kernel Version", value: SystemSnapshot.macos.kernelVersion)
+                LabeledContent("Uptime", value: SystemSnapshot.macos.formattedSystemUptime)
                 
-                Button("About This Mac", action: sys.macos.launchAboutThisMac)
+                Button("About This Mac", action: SystemSnapshot.macos.launchAboutThisMac)
                     .leftAlignment()
             }
             
             
-            Section("Operating System") {
+            Section("Operating SystemSnapshottem") {
                 HStack {
-                    sys.os.osIcon
+                    SystemSnapshot.os.osIcon
                         .resizable()
                         .scaledToFit()
                         .frame(width: 32, height: 32)
                     
-                    Text(sys.os.osTitleString)
+                    Text(SystemSnapshot.os.osTitleString)
                     
                     Spacer()
                     
-                    Text("Version \(sys.os.osVersionString) (Build \(sys.os.osBuildString))")
+                    Text("Version \(SystemSnapshot.os.osVersionString) (Build \(SystemSnapshot.os.osBuildString))")
                 }
                 
-                LabeledContent("Previous Build", value: sys.os.previousUpdateBuild ?? "N/A")
-                LabeledContent("Upgrade Time", value: sys.os.lastUpgradeSystemFormatted ?? "N/A")
+                LabeledContent("Previous Build", value: SystemSnapshot.os.previousUpdateBuild ?? "N/A")
+                LabeledContent("Upgrade Time", value: SystemSnapshot.os.lastUpgradeSystemFormatted ?? "N/A")
+                LabeledContent(
+                    "Last check Time",
+                    value: SystemSnapshot.os.lastSuccessfulCheck.formatted
+                )
                 
-                LabeledContent("Beta Version", value: sys.os.isBeta.str)
-                LabeledContent("Internal Build", value: sys.os.isInternalBuild.str)
-                LabeledContent("Virtual Machine", value: sys.os.checkIORegistry().str)
+                LabeledContent("Beta Version", value: SystemSnapshot.os.isBeta.str)
+                LabeledContent("Internal Build", value: SystemSnapshot.os.isInternal.str)
+                LabeledContent("Virtual Machine", value: SystemSnapshot.os.isVirtualMachine.str)
                 
-                Button("Launch Software Update", action: sys.os.launchSoftwareUpdate)
+                Button("Launch Software Update", action: SystemSnapshot.os.launchSoftwareUpdate)
                     .leftAlignment()
             }
             
             
             Section("Security") {
-                LabeledContent("Allowed App Sources", value: sys.security.allowedAppSources)
+                LabeledContent("Allowed App Sources", value: SystemSnapshot.security.allowedAppSources)
                 
                 LabeledContent(
                     "SIP Enabled",
-                    value: sys.security.sipEnabled.str
+                    value: SystemSnapshot.security.sipEnabled.str
                 )
                 
                 LabeledContent(
                     "File Vault Enabled",
-                    value: sys.security.fileVaultEnabled.str
+                    value: SystemSnapshot.security.fileVaultEnabled.str
                 )
                 
                 LabeledContent(
                     "GateKeeper Enabled",
-                    value: sys.security.gatekeeperEnabled.str
+                    value: SystemSnapshot.security.gatekeeperEnabled.str
+                )
+                
+                LabeledContent(
+                    "Firwall Enabled",
+                    value: SystemSnapshot.security.firewallEnabled.str
                 )
                 
                 LabeledContent(
                     "FindMe Enabled",
-                    value: sys.security.isFindMyMacEnabled.str
+                    value: SystemSnapshot.security.findMeEnabled.str
                 )
                 
-                Button("Security Preferences", action: sys.security.openSecurityPref)
+                Button("Security Preferences", action: SystemSnapshot.security.openSecurityPref)
                     .leftAlignment()
             }
         }

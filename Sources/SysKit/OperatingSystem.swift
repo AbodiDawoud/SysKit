@@ -38,7 +38,7 @@ public struct OperatingSystemInfo {
     
     
     /// A Boolean value indicating whether the OS is an internal (Apple-only) build.
-    public let isInternalBuild: Bool
+    public let isInternal: Bool
     
     
     /// A boolean value indicating whether the system is running in a virtual machine.
@@ -64,7 +64,7 @@ public struct OperatingSystemInfo {
         let AAFDeviceInfo =          NSClassFromString("AAFDeviceInfo") as! NSObject.Type
         
         self.isBeta =              platform.value(forKey: "isBeta") as! Bool
-        self.isInternalBuild =     AFUtilities.value(forKey: "isInternalBuild") as! Bool
+        self.isInternal =          AFUtilities.value(forKey: "isInternalBuild") as! Bool
         self.isVirtualMachine =    AAFDeviceInfo.value(forKey: "isVirtualMachine") as! Bool
     }
 
@@ -84,7 +84,7 @@ public struct OperatingSystemInfo {
         guard let timestamp = lastUpgradeSystemTimestamp else { return nil }
         let date = Date(timeIntervalSince1970: timestamp)
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
         return formatter.string(from: date)
     }
     

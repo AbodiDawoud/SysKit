@@ -16,6 +16,8 @@ import Foundation
 /// This struct acts as the single entry point for accessing system-wide information.
 @MainActor
 public struct SystemSnapshot {
+    private init() {}
+    
     public static let os = OperatingSystemInfo()
     public static let macos = MacOS()
     public static let security = SecurityInfo()
