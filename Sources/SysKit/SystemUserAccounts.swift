@@ -91,15 +91,15 @@ public struct SystemUserAccounts {
     
     /// Opens the Apple ID preferences pane in System Settings.
     public func openAppleIDPrefs() {
-        let url = URL(string: "x-apple.systempreferences:com.apple.AppleID-Settings.extension")!
-        NSWorkspace.shared.open(url)
+        let AFUtilities = NSClassFromString("AFUtilities") as! NSObject.Type
+        AFUtilities.perform("openAppleIDPref")
     }
     
     
     /// Opens the Users & Groups preferences pane in System Settings.
     public func openUsersAndGroupsPrefs() {
-        let url = URL(string: "x-apple.systempreferences:com.apple.Users-Groups-Settings.extension")!
-        NSWorkspace.shared.open(url)
+        let AFUtilities = NSClassFromString("AFUtilities") as! NSObject.Type
+        AFUtilities.perform("openUsersAndGroupsPref")
     }
 }
 

@@ -56,7 +56,7 @@ struct ContentView: View {
             }
             
             
-            Section("Operating SystemSnapshottem") {
+            Section("Operating System") {
                 HStack {
                     SystemSnapshot.os.osIcon
                         .resizable()
@@ -138,7 +138,11 @@ struct UsersGroupsView: View {
                     LabeledContent("Email", value: appleAccount.accountId)
                     LabeledContent("Verified", value: appleAccount.isVerified.str)
                 } header: {
-                    Label("Apple ID", systemImage: "apple.logo")
+                    Button(action: usr.openAppleIDPrefs) {
+                        Label("Apple ID", systemImage: "apple.logo")
+                    }
+                    .pointingHand()
+                    .buttonStyle(.plain)
                 }
             }
             
@@ -165,9 +169,15 @@ struct UsersGroupsView: View {
                 }
             }
             
-            Section("Current User") {
+            Section {
                 LabeledContent("Guest User", value: usr.isCurrentUserGuest.str)
                 LabeledContent("Admin User", value: usr.isCurrentUserAdmin.str)
+            } header: {
+                Button(action: usr.openUsersAndGroupsPrefs) {
+                    Label("Current User", systemImage: "person.crop.circle.dashed")
+                }
+                .pointingHand()
+                .buttonStyle(.plain)
             }
         }
         .formStyle(.grouped)
@@ -208,7 +218,7 @@ struct UsersGroupsView: View {
             
             Spacer()
             
-            Divider().padding(.vertical)
+            Divider().padding(.vertical, 2)
             
             Text(user.passwordHint)
                 .foregroundStyle(.secondary)

@@ -35,3 +35,11 @@ extension Date {
         return formatter.string(from: self)
     }
 }
+
+extension Button {
+    func pointingHand() -> some View {
+        self.onHover { isHooverig in
+            isHooverig ? NSCursor.pointingHand.push() : NSCursor.pop()
+        }
+    }
+}
