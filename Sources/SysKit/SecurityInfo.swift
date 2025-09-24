@@ -144,8 +144,9 @@ private extension SecurityInfo {
     
     private func isFindMeEnabled() -> Bool {
         let path = "/Library/Preferences/com.apple.FindMyMac.plist"
-        let plist = NSDictionary(contentsOfFile: path) as! [String: Any]
-        let isEnabled = plist["FMMEnabled"] as! Int
+        guard let plist = NSDictionary(contentsOfFile: path) as? [String: Any],
+            let isEnabled = plist["FMMEnabled"] as? Int
+        else { return false }
         
         return isEnabled == 1
     }

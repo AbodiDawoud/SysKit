@@ -52,16 +52,16 @@ public struct MacOS {
         let platform = Self.sharedPlatformInfo()
         
         self.macModelName =         platform.value(forKey: "macModelName") as! String
-        self.macModelDetails =      platform.value(forKey: "macModelDetails") as! String
+        self.macModelDetails =      platform.value(forKey: "macModelDetails") as? String ?? "N/A"
         self.chip =                 platform.value(forKey: "processorString") as! String
         self.memory =               platform.value(forKey: "installedMemorySize") as! String
         
-        self.boardID =              platform.value(forKey: "boardID") as! String
-        self.regulatoryID =         platform.value(forKey: "regulatoryID") as! String
-        self.serialString =         platform.value(forKey: "serialString") as! String
+        self.boardID =              platform.value(forKey: "boardID") as? String ?? "N/A"
+        self.serialString =         platform.value(forKey: "serialString") as? String ?? "N/A"
+        self.regulatoryID =         platform.value(forKey: "regulatoryID") as? String ?? "N/A"
         
-        self.configCode =           platform.value(forKey: "configCode") as! String
-        self.hasUpgradableMemory =  platform.value(forKey: "hasUpgradableMemory") as! Bool
+        self.configCode =           platform.value(forKey: "configCode") as? String ?? "N/A"
+        self.hasUpgradableMemory =  platform.value(forKey: "hasUpgradableMemory") as? Bool ?? false
     }
     
     
@@ -87,6 +87,7 @@ public struct MacOS {
         formatter.unitsStyle = .full  // or .abbreviated for short style
         return formatter.string(from: uptime) ?? "N/A"
     }
+    
     
     /// Opens the **About This Mac** app in new window.
     public func launchAboutThisMac() {
@@ -114,6 +115,6 @@ extension MacOS {
         sysctlbyname(name, nil, &size, nil, 0)
         var buffer = [CChar](repeating: 0,  count: size)
         sysctlbyname(name, &buffer, &size, nil, 0)
-        return String(cString: buffer, encoding: .utf8)!
+        return String(cString: buffer, encoding: .utf8) ?? "N/A"
     }
 }

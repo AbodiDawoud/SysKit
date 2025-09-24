@@ -34,8 +34,8 @@ public struct SystemUserAccounts {
     public init() {
         if let meAccount = Self.accountsDictionary()?.first {
             appleAccount = AppleAccount(
-                accountId: meAccount["AccountID"] as! String,
-                displayName: meAccount["DisplayName"] as! String,
+                accountId: meAccount["AccountID"] as? String ?? "Unknow",
+                displayName: meAccount["DisplayName"] as? String ?? "Unknow",
                 isVerified: (meAccount["primaryEmailVerified"] as? Int) == 1
             )
         }
@@ -101,6 +101,38 @@ public struct SystemUserAccounts {
         let AFUtilities = NSClassFromString("AFUtilities") as! NSObject.Type
         AFUtilities.perform("openUsersAndGroupsPref")
     }
+    
+    
+    /// Returns the password hint for the specified user,
+    /// or `nil` if the hint cannot be retrieved.
+    public func getPasswordHint(for user: String) -> String? {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/dscl")
+        process.arguments = [".", "-read", "/Users/\(user)", "hint"]
+
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = pipe
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+        } catch {
+            return nil
+        }
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        guard var output = String(data: data, encoding: .utf8) else { return nil }
+
+        output = output.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Extract text after "hint: "
+        if let range = output.range(of: "hint: ") {
+            return String(output[range.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+
+        return nil
+    }
 }
 
 private extension SystemUserAccounts {
@@ -131,10 +163,10 @@ private extension SystemUserAccounts {
         for user in deletedUsersArray {
             users.append(
                 DeletedUser(
-                    name: user["name"] as! String,
-                    realName: user["dsAttrTypeStandard:RealName"] as! String,
-                    uniqueID: user["dsAttrTypeStandard:UniqueID"] as! Int,
-                    deleteDate: user["date"] as! Date
+                    name: user["name"] as? String ?? "N/A",
+                    realName: user["dsAttrTypeStandard:RealName"] as? String ?? "N/A",
+                    uniqueID: user["dsAttrTypeStandard:UniqueID"] as? Int ?? 111,
+                    deleteDate: user["date"] as? Date ?? .distantPast
                 )
             )
         }
@@ -144,8 +176,22 @@ private extension SystemUserAccounts {
 
     
     private static func loadCryptoUsers() -> [CryptoUser] {
-        let path = "/System/Volumes/Preboot/A36FE7A2-377D-4357-BAC0-410C4917640A/var/db/CryptoUserInfo.plist"
-        let dic = NSDictionary(contentsOfFile: path) as! [String: [String: Any]]
+        let prebootRoot = "/System/Volumes/Preboot/"
+        let suffix = "/var/db/CryptoUserInfo.plist"
+        var uuid: String = ""
+        
+        try? FileManager.default.contentsOfDirectory(atPath: prebootRoot).forEach {
+            //A36FE7A4-377D-4257-BAC0-410C4917641A
+            if $0.contains("-") && $0.count == 36 {
+                uuid = $0
+                return
+            }
+        }
+        
+        let fullPath = prebootRoot + uuid + suffix
+        
+        guard let dic = NSDictionary(contentsOfFile: fullPath) as? [String: [String: Any]]
+        else { return [] }
         
         var foundUsers = [CryptoUser]()
         for user in dic.values {
@@ -155,11 +201,11 @@ private extension SystemUserAccounts {
             
             foundUsers.append(
                 CryptoUser(
-                    fullName: user["FullName"] as! String,
-                    shortName: user["ShortName"] as! String,
-                    passwordHint: user["PasswordHint"] as! String,
-                    pictureData: user["PictureData"] as! Data,
-                    userType: user["UserType"] as! String
+                    fullName: user["FullName"] as? String ?? "N/A",
+                    shortName: user["ShortName"] as? String ?? "N/A",
+                    passwordHint: user["PasswordHint"] as? String ?? "N/A",
+                    pictureData: user["PictureData"] as? Data ?? Data(),
+                    userType: user["UserType"] as? String ?? "N/A"
                 )
             )
         }

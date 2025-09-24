@@ -53,7 +53,7 @@ public struct OperatingSystemInfo {
         self.osBuildString =        platform.value(forKey: "osBuildString") as! String
 
         self.previousUpdateBuild =          Self.powerlogdPlistValue(forKey: "PreviousUpdateBuild")
-        self.lastUpgradeSystemTimestamp =   Self.powerlogdPlistValue(forKey: "LastUpgradeSystemTimestamp") as Double?
+        self.lastUpgradeSystemTimestamp =   Self.powerlogdPlistValue(forKey: "LastUpgradeSystemTimestamp")
         
         
         let suPlist = Self.softwareUpdatedPlist()
@@ -111,3 +111,5 @@ private extension OperatingSystemInfo {
         return NSDictionary(contentsOfFile: plistPath)!
     }
 }
+
+

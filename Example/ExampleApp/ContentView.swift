@@ -19,7 +19,7 @@ struct ContentView: View {
                         .scaledToFit()
                         .frame(width: 150, height: 150)
                     
-                    Text(ProcessInfo.processInfo.fullUserName)
+                    Text(NSFullUserName())
                         .font(.headline)
                         .offset(x: 0, y: -10)
                 }
@@ -202,17 +202,19 @@ struct UsersGroupsView: View {
     
     func cryptoUserRow(_ user: CryptoUser) -> some View {
         HStack {
-            Image(nsImage: .init(data: user.pictureData)!)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 33, height: 33)
-                .clipShape(.circle)
+            Image(nsImage:
+                    .init(data: user.pictureData) ?? NSImage(symbolName: "person.circle.fill", variableValue: 1.0)!
+            )
+            .resizable()
+            .scaledToFit()
+            .frame(width: 33, height: 33)
+            .clipShape(.circle)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(user.fullName)
                 
                 Text(user.shortName)
-                    .textScale(.secondary)
+                    .font(.subheadline)
                     .foregroundStyle(.orange)
             }
             
