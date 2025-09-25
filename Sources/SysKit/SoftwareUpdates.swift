@@ -6,7 +6,11 @@
 import Foundation
 
 
+@MainActor
 public struct SoftwareUpdatesInfo {
+    static let shared = SoftwareUpdatesInfo()
+    
+    
     /// The build number of the previous update, if available.
     public let previousUpdateBuild: String
     
@@ -124,9 +128,9 @@ public struct SoftwareUpdates: Decodable {
          before making any changes from the settings app
          the default values is the true values that macOS configures for all mac machines by default.
          */
-        automaticDownload = try container.decode(Bool?.self, forKey: .automaticDownload) ?? true
-        criticalUpdateInstall = try container.decode(Bool?.self, forKey: .criticalUpdateInstall) ?? true
-        automaticallyInstallMacOSUpdates = try container.decode(Bool?.self, forKey: .automaticallyInstallMacOSUpdates) ?? false
+        automaticDownload = try container.decodeIfPresent(Bool.self, forKey: .automaticDownload) ?? true
+        criticalUpdateInstall = try container.decodeIfPresent(Bool.self, forKey: .criticalUpdateInstall) ?? true
+        automaticallyInstallMacOSUpdates = try container.decodeIfPresent(Bool.self, forKey: .automaticallyInstallMacOSUpdates) ?? false
     }
 }
 

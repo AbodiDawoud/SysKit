@@ -33,7 +33,8 @@ public struct OperatingSystemInfo {
     
     
     /// Provides useful information about pending and applied software updates.
-    public let softwareUpdates: SoftwareUpdatesInfo
+    @MainActor
+    public var softwareUpdates: SoftwareUpdatesInfo { .shared }
     
     
     
@@ -51,8 +52,6 @@ public struct OperatingSystemInfo {
         self.isBeta =                platform.value(forKey: "isBeta") as! Bool
         self.isInternal =            AFUtilities.value(forKey: "isInternalBuild") as! Bool
         self.isVirtualMachine =      AAFDeviceInfo.value(forKey: "isVirtualMachine") as! Bool
-
-        self.softwareUpdates =       SoftwareUpdatesInfo()
     }
 
     

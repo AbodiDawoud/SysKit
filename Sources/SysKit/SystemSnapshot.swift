@@ -22,4 +22,5 @@ public struct SystemSnapshot {
     public static let macos = MacOS()
     public static let security = SecurityInfo()
     public static let user = SystemUserAccounts()
+    public static let softwareUpdate = SoftwareUpdatesInfo.shared
 }

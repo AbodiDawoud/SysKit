@@ -252,9 +252,23 @@ struct SoftwareUpdatesView: View {
             }
             
             Section {
-                LabeledContent("Download new updates when available", value: updatesManager.automaticDownload ? "On" : "Off")
-                LabeledContent("Install macOS updates", value: updatesManager.automaticallyInstallMacOSUpdates ? "On" : "Off")
-                LabeledContent("Install critical updates", value: updatesManager.criticalUpdateInstall ? "On" : "Off")
+                LabeledContent("Download new updates when available") {
+                    Image(systemName: "checkmark")
+                        .foregroundStyle(updatesManager.automaticDownload ? Color.primary : .gray.opacity(0.2))
+                        .bold()
+                }
+                
+                LabeledContent("Install macOS updates") {
+                    Image(systemName: "checkmark")
+                        .foregroundStyle(updatesManager.automaticallyInstallMacOSUpdates ? Color.primary : .gray.opacity(0.2))
+                        .bold()
+                }
+                
+                LabeledContent("Install critical updates") {
+                    Image(systemName: "checkmark")
+                        .foregroundStyle(updatesManager.criticalUpdateInstall ? Color.primary : .gray.opacity(0.2))
+                        .bold()
+                }
             }
             
             Section("Recommended Updates") {
@@ -284,3 +298,9 @@ struct SoftwareUpdatesView: View {
         .navigationTitle("Software Updates")
     }
 }
+
+/*
+ LabeledContent("Download new updates when available", value: updatesManager.automaticDownload ? "On" : "Off")
+ LabeledContent("Install macOS updates", value: updatesManager.automaticallyInstallMacOSUpdates ? "On" : "Off")
+ LabeledContent("Install critical updates", value: updatesManager.criticalUpdateInstall ? "On" : "Off")
+ */
