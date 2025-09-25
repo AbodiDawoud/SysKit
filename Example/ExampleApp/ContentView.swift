@@ -9,6 +9,7 @@ import SysKit
 
 struct ContentView: View {
     @State private var showUsersSheet: Bool = false
+    @State private var showSoftwareUpdatesSheet: Bool = false
     
     var body: some View {
         Form {
@@ -69,19 +70,16 @@ struct ContentView: View {
                     
                     Text("Version \(SystemSnapshot.os.osVersionString) (Build \(SystemSnapshot.os.osBuildString))")
                 }
-                
-                LabeledContent("Previous Build", value: SystemSnapshot.os.previousUpdateBuild ?? "N/A")
-                LabeledContent("Upgrade Time", value: SystemSnapshot.os.lastUpgradeSystemFormatted ?? "N/A")
-                LabeledContent(
-                    "Last check Time",
-                    value: SystemSnapshot.os.lastSuccessfulCheck.formatted
-                )
+            
+                LabeledContent("Previous Build", value: SystemSnapshot.os.softwareUpdates.previousUpdateBuild)
+                LabeledContent("Upgrade Time", value: SystemSnapshot.os.softwareUpdates.lastUpgradeTimeFormatted)
                 
                 LabeledContent("Beta Version", value: SystemSnapshot.os.isBeta.str)
                 LabeledContent("Internal Build", value: SystemSnapshot.os.isInternal.str)
                 LabeledContent("Virtual Machine", value: SystemSnapshot.os.isVirtualMachine.str)
+
                 
-                Button("Launch Software Update", action: SystemSnapshot.os.launchSoftwareUpdate)
+                Button("Software Updates") { showSoftwareUpdatesSheet.toggle() }
                     .leftAlignment()
             }
             
@@ -123,8 +121,12 @@ struct ContentView: View {
         .popover(isPresented: $showUsersSheet) {
             NavigationStack(root: UsersGroupsView.init)
         }
+        .popover(isPresented: $showSoftwareUpdatesSheet) {
+            NavigationStack(root: SoftwareUpdatesView.init)
+        }
     }
 }
+
 
 
 struct UsersGroupsView: View {
@@ -163,7 +165,7 @@ struct UsersGroupsView: View {
             
             if usr.deletedUsers.isEmpty == false {
                 Section("Deleted Users") {
-                    ForEach(usr.deletedUsers, id: \.uniqueID) {
+                    ForEach(usr.deletedUsers, id: \.self) {
                         deletedUserRow($0)
                     }
                 }
@@ -225,5 +227,60 @@ struct UsersGroupsView: View {
             Text(user.passwordHint)
                 .foregroundStyle(.secondary)
         }
+    }
+}
+
+
+
+struct SoftwareUpdatesView: View {
+    let updatesManager = SystemSnapshot.os.softwareUpdates
+    
+    var body: some View {
+        Form {
+            Section {
+                HStack {
+                    Button(action: SystemSnapshot.os.launchSoftwareUpdate) {
+                        Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
+                            .bold()
+                            .foregroundStyle(.blue)
+                    }
+                    .pointingHand()
+                    .buttonStyle(.plain)
+                    
+                    LabeledContent("Last check Time", value: updatesManager.lastCheck.formatted)
+                }
+            }
+            
+            Section {
+                LabeledContent("Download new updates when available", value: updatesManager.automaticDownload ? "On" : "Off")
+                LabeledContent("Install macOS updates", value: updatesManager.automaticallyInstallMacOSUpdates ? "On" : "Off")
+                LabeledContent("Install critical updates", value: updatesManager.criticalUpdateInstall ? "On" : "Off")
+            }
+            
+            Section("Recommended Updates") {
+                ForEach(updatesManager.recommendedUpdates, id: \.identifier) { update in
+                    HStack(spacing: 0) {
+                        Text(update.displayName)
+                        
+                        // Avoid display update version if display name already contains it
+                        if update.displayName.contains(update.displayVersion) == false {
+                            Text(" • ").bold().foregroundStyle(.gray)
+                            
+                            Text(update.displayVersion)
+                                .font(.subheadline)
+                                .foregroundStyle(.orange)
+                        }
+                    }
+                }
+            }
+            
+            Section("Offers Dictionary") {
+                ForEach(updatesManager.previousOffers.shuffled(), id: \.key) { offer in
+                    LabeledContent("\(offer.key)", value: offer.value.formatted)
+                }
+            }
+        }
+        .formStyle(.grouped)
+        .navigationTitle("Software Updates")
     }
 }

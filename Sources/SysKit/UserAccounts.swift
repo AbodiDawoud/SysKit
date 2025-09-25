@@ -92,14 +92,14 @@ public struct SystemUserAccounts {
     /// Opens the Apple ID preferences pane in System Settings.
     public func openAppleIDPrefs() {
         let AFUtilities = NSClassFromString("AFUtilities") as! NSObject.Type
-        AFUtilities.perform("openAppleIDPref")
+        AFUtilities.perform(Selector(("openAppleIDPref")))
     }
     
     
     /// Opens the Users & Groups preferences pane in System Settings.
     public func openUsersAndGroupsPrefs() {
         let AFUtilities = NSClassFromString("AFUtilities") as! NSObject.Type
-        AFUtilities.perform("openUsersAndGroupsPref")
+        AFUtilities.perform(Selector(("openUsersAndGroupsPref")))
     }
     
     
@@ -249,7 +249,7 @@ public struct CryptoUser {
 
 
 /// Represents a previously deleted user account on the system.
-public struct DeletedUser {
+public struct DeletedUser: Hashable {
     /// The account’s short name (username).
     public let name: String
     
